@@ -21,6 +21,7 @@ import { DataStorageService } from './shared/dataStorage.service';
 import { RecipeResolver } from './recipes/recipe-resolver.service';
 import { AuthComponent } from './auth/auth.component';
 import { AuthService } from './auth/auth.service';
+import { LoaderSpinnerComponent } from './loader-spinner/loader-spinner.component';
 
 @NgModule({
   declarations: [
@@ -35,7 +36,8 @@ import { AuthService } from './auth/auth.service';
     DropdownDirective,
     RecipeStartComponent,
     RecipeEditComponent,
-    AuthComponent
+    AuthComponent,
+    LoaderSpinnerComponent
   ],
   imports: [
     BrowserModule,

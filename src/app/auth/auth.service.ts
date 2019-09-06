@@ -1,5 +1,7 @@
 import { Injectable } from "@angular/core";
-import { HttpClient } from "@angular/common/http";
+import { HttpClient, HttpErrorResponse } from "@angular/common/http";
+import { catchError } from "rxjs/operators";
+import { throwError } from "rxjs";
 
 const API_KEY="AIzaSyDBRaQKFHGxRw9OQbuoP3ALPVHINNXUnWw";
 
@@ -20,12 +22,31 @@ export class AuthService{
     login(email: string, password: string){
         return this.http.post<UserData>("https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key="+API_KEY,
             { email: email, password: password, returnSecureToken: true})
-        
+        .pipe(catchError(this.handleError));  
     }
 
     signUp(email: string, password: string){
         return this.http.post<UserData>("https://identitytoolkit.googleapis.com/v1/accounts:signUp?key="+API_KEY,
             { email: email, password: password, returnSecureToken: true})
-        
+            .pipe(catchError(this.handleError));
+    }
+
+    handleError(errorRes: HttpErrorResponse){
+        let errMsg = "An unknown error occured! :O";
+        if (!errorRes.error.error || !errorRes.error){
+            return throwError(errMsg);
+        }
+        switch (errorRes.error.error.message){
+            case 'EMAIL_NOT_FOUND': 
+                errMsg="There is no user record corresponding to this identifier. The user may have been deleted."
+                break;
+            case 'INVALID_PASSWORD':
+                errMsg="The password is invalid or the user does not have a password.";
+                break;
+            case 'EMAIL_EXISTS': 
+                errMsg="The email address is already in use by another account."
+                break;    
+        }
+        return throwError(errMsg);
     }
 }

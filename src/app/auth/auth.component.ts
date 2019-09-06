@@ -1,7 +1,8 @@
-import { Component } from "../../../node_modules/@angular/core";
+import { Component } from "@angular/core";
 import { NgForm } from "@angular/forms";
 import { AuthService, UserData } from "./auth.service";
-import { BehaviorSubject } from "../../../node_modules/rxjs";
+import { BehaviorSubject } from "rxjs";
+import { Router } from "@angular/router";
 
 @Component({
     selector: 'auth',
@@ -9,52 +10,46 @@ import { BehaviorSubject } from "../../../node_modules/rxjs";
 })
 export class AuthComponent{
     isLogin = true;
+    isLoading = false;
     error = null;
     errorMsg: string;
     user = new BehaviorSubject<UserData>(null);
 
-    constructor(private authService: AuthService){}
+    constructor(private authService: AuthService, private route: Router){}
 
     toggleBtn(){
         this.isLogin = !this.isLogin;
     }
 
     login(email: string, password: string){
+        this.isLoading = true;
         this.authService.login(email, password)
         .subscribe(
             (userData)=>{
-                console.log(userData);
                 this.error=null;
                 localStorage.setItem('userData',JSON.stringify(userData));
+                this.isLoading = false;
+                this.route.navigateByUrl("/recipes");
             },
             (err)=>{
-                console.log(err);
-                this.error = err;
-                switch (err.error.error.message){
-                    case 'EMAIL_NOT_FOUND': 
-                        this.errorMsg="There is no user record corresponding to this identifier. The user may have been deleted."
-                        break;
-                    case 'INVALID_PASSWORD':
-                        this.errorMsg="The password is invalid or the user does not have a password.";
-                        break;      
-                }
+                this.errorMsg = err;
+                this.isLoading = false;
             }
         );
     }
 
     signup(email: string, password: string){
+        this.isLoading = true;
         this.authService.signUp(email, password)
         .subscribe(
             (userData)=>{
                 console.log(userData);
                 this.error=null;
+                this.isLoading = false;
             },
             (err)=>{
-                this.error = err;
-                switch (err.error.error.message){
-                    case 'EMAIL_EXISTS': this.errorMsg="The email address is already in use by another account."
-                        break;
-                }
+                this.errorMsg = err;
+                this.isLoading = false;
             }
         );     
     }
@@ -63,5 +58,6 @@ export class AuthComponent{
         var formValues = authForm.form.value;
         this.isLogin ? this.login(formValues.email, formValues.password) 
             : this.signup(formValues.email, formValues.password);
+        authForm.reset();
     }
 }

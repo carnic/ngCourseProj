@@ -1,27 +1,30 @@
-<p class="alert alert-danger" *ngIf="error">{{errorMsg}}</p>
-<form #authForm="ngForm" (ngSubmit)="authBtn(authForm)">
-    <div class="row">
-        <div class="col-md-6">
-          <div class="form-group">
-                <label for="email">Email:</label>
-                <input name="email" class="form-control" type="email" ngModel required email/>
+<div class="row">
+    <p class="alert alert-danger" *ngIf="errorMsg!=null">{{errorMsg}}</p>
+    <app-loading-spinner *ngIf="isLoading"></app-loading-spinner>
+    <form #authForm="ngForm" (ngSubmit)="authBtn(authForm)" *ngIf="!isLoading">
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="email">Email:</label>
+                    <input name="email" class="form-control" type="email" ngModel required email/>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input name="password" class="form-control" type="password" ngModel required minlength="8"/>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="password">Password:</label>
+                    <input name="password" class="form-control" type="password" ngModel required minlength="8"/>
+                </div>
             </div>
         </div>
-    </div>
-    <div class="row">
-        <div class="col-md-6">
-            <div class="form-group">
-                <button class="btn btn-primary" type="submit" [disabled]="!authForm.valid">Sign {{ isLogin?'In':'Up'}}</button> |
-                <button class="btn btn-primary" type="button" (click)="toggleBtn()">Toggle for Sign {{ isLogin?'Up':'In'}}!</button>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <button class="btn btn-primary" type="submit" [disabled]="!authForm.valid">Sign {{ isLogin?'In':'Up'}}</button> |
+                    <button class="btn btn-primary" type="button" (click)="toggleBtn()">Toggle for Sign {{ isLogin?'Up':'In'}}!</button>
+                </div>
             </div>
         </div>
-    </div>
-</form>
+    </form>
+</div>
